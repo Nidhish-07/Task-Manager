@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 const validator = require("validator");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const Task = require("../models/task");
 
 /**
  * pattern:
@@ -52,6 +53,12 @@ const userSchema = new mongoose.Schema({
   tokens: [{ token: { type: String, required: true } }],
 });
 
+userSchema.virtual("tasks", {
+  ref: "Task",
+  localField: "_id",
+  foreignField: "creator",
+});
+
 //* generating auth token
 userSchema.methods.createAuthToken = async function () {
   const user = this;
@@ -100,6 +107,14 @@ userSchema.pre("save", async function (next) {
     user.password = await bcrypt.hash(user.password, 8);
   }
 
+  next();
+});
+
+//*deleting user and its tasks
+userSchema.pre("remove", async function (next) {
+  const user = this;
+
+  await Task.deleteMany({ creator: user._id });
   next();
 });
 
