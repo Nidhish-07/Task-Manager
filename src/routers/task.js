@@ -15,11 +15,22 @@ router.post("/tasks", auth, async (req, res) => {
   }
 });
 
+//* getting filtered tasks
 router.get("/tasks", auth, async (req, res) => {
   try {
-    const tasks = await Task.find({ creator: req.user._id });
+    if (!req.query.completed) {
+      const tasks = await Task.find({ creator: req.user._id });
+      return res.status(200).send(tasks);
+    } else {
+      const tasks = await Task.find({
+        creator: req.user._id,
+        completed: req.query.completed == "true",
+      });
+
+      res.status(200).send(tasks);
+    }
+
     // await req.user.populate("tasks").execPopulate();
-    res.status(200).send(tasks);
   } catch (error) {
     res.sendStatus(500);
   }

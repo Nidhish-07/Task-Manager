@@ -12,46 +12,49 @@ const Task = require("../models/task");
  Model 
  */
 
-const userSchema = new mongoose.Schema({
-  name: {
-    type: String,
-    required: true,
-    trim: true,
-  },
-  age: {
-    type: Number,
-    validate(value) {
-      if (value < 0) {
-        throw new Error("Age must be a positive number");
-      }
+const userSchema = new mongoose.Schema(
+  {
+    name: {
+      type: String,
+      required: true,
+      trim: true,
     },
-    default: 0,
-  },
-  email: {
-    type: String,
-    required: true,
-    validate(value) {
-      if (!validator.isEmail(value)) {
-        throw new Error("Email is invalid");
-      }
+    age: {
+      type: Number,
+      validate(value) {
+        if (value < 0) {
+          throw new Error("Age must be a positive number");
+        }
+      },
+      default: 0,
     },
-    trim: true,
-    lowercase: true,
-    unique: true,
-  },
-  password: {
-    type: String,
-    trim: true,
-    validate(value) {
-      if (value.trim().includes("password")) {
-        throw new Error("This password not valid");
-      }
+    email: {
+      type: String,
+      required: true,
+      validate(value) {
+        if (!validator.isEmail(value)) {
+          throw new Error("Email is invalid");
+        }
+      },
+      trim: true,
+      lowercase: true,
+      unique: true,
     },
-    required: true,
-    minlength: [8, "Password should be more than of 8 characters"],
+    password: {
+      type: String,
+      trim: true,
+      validate(value) {
+        if (value.trim().includes("password")) {
+          throw new Error("This password not valid");
+        }
+      },
+      required: true,
+      minlength: [8, "Password should be more than of 8 characters"],
+    },
+    tokens: [{ token: { type: String, required: true } }],
   },
-  tokens: [{ token: { type: String, required: true } }],
-});
+  { timestamps: true }
+);
 
 userSchema.virtual("tasks", {
   ref: "Task",
