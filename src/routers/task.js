@@ -15,13 +15,20 @@ router.post("/tasks", auth, async (req, res) => {
   }
 });
 
-//* getting filtered tasks, adding pagination
+//* getting filtered tasks, adding pagination and sorting of tasks
 router.get("/tasks", auth, async (req, res) => {
+  const sort = {};
+  if (req.query.sortedBy) {
+    const [createdAt, order] = req.query.sortedBy.split("_");
+    sort[createdAt] = order;
+  }
   try {
     if (!req.query.completed) {
       const tasks = await Task.find({ creator: req.user._id })
         .limit(+req.query.limit)
-        .skip(+req.query.skip);
+        .skip(+req.query.skip)
+        .sort(sort);
+
       return res.status(200).send(tasks);
     } else {
       const tasks = await Task.find({
@@ -29,7 +36,8 @@ router.get("/tasks", auth, async (req, res) => {
         completed: req.query.completed == "true",
       })
         .limit(+req.query.limit)
-        .skip(+req.query.skip);
+        .skip(+req.query.skip)
+        .sort(sort);
 
       res.status(200).send(tasks);
     }
