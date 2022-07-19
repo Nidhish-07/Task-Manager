@@ -52,6 +52,7 @@ const userSchema = new mongoose.Schema(
       minlength: [8, "Password should be more than of 8 characters"],
     },
     tokens: [{ token: { type: String, required: true } }],
+    avatar: { type: Buffer },
   },
   { timestamps: true }
 );
@@ -81,6 +82,7 @@ userSchema.methods.toJSON = function () {
 
   delete userObject.password;
   delete userObject.tokens;
+  delete userObject.avatar;
 
   return userObject;
 };
