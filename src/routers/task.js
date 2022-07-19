@@ -15,17 +15,21 @@ router.post("/tasks", auth, async (req, res) => {
   }
 });
 
-//* getting filtered tasks
+//* getting filtered tasks, adding pagination
 router.get("/tasks", auth, async (req, res) => {
   try {
     if (!req.query.completed) {
-      const tasks = await Task.find({ creator: req.user._id });
+      const tasks = await Task.find({ creator: req.user._id })
+        .limit(+req.query.limit)
+        .skip(+req.query.skip);
       return res.status(200).send(tasks);
     } else {
       const tasks = await Task.find({
         creator: req.user._id,
         completed: req.query.completed == "true",
-      });
+      })
+        .limit(+req.query.limit)
+        .skip(+req.query.skip);
 
       res.status(200).send(tasks);
     }
