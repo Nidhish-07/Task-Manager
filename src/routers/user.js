@@ -11,7 +11,8 @@ router.post("/users", async (req, res) => {
 
   try {
     await user.save();
-    sendWelcomeEmail(user.email, user.name);
+    //TODO rectifying the sendGrid issue
+    // sendWelcomeEmail(user.email, user.name);
     const token = await user.createAuthToken();
     res.status(201).send({ user, token });
   } catch (e) {
@@ -109,7 +110,8 @@ router.delete("/users/me", auth, async (req, res) => {
     // }
 
     await req.user.remove();
-    sendCancelEmail(req.user.email, req.user.name);
+    //TODO rectifying the sendGrid issue
+    // sendCancelEmail(req.user.email, req.user.name);
     res.send(req.user);
   } catch (error) {
     res.status(400).send(error);
